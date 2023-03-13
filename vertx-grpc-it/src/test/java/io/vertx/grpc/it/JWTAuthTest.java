@@ -68,9 +68,7 @@ public class JWTAuthTest extends ServerTestBase {
     };
 
     // Add the JWTAuthInterceptor and start the server
-    ServerInterceptor wrappedAuthInterceptor = JWTAuthInterceptor.create(authProvider);
-    ServerServiceDefinition authedService = ServerInterceptors.intercept(service, wrappedAuthInterceptor);
-    GrpcServiceBridge serverStub = GrpcServiceBridge.bridge(authedService);
+    GrpcServiceBridge serverStub = JWTAuthInterceptor.create(authProvider, service);
     serverStub.bind(server);
     startServer(server);
   }

@@ -11,7 +11,6 @@ import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.grpc.server.GrpcServer;
 import io.vertx.grpc.server.GrpcServiceBridge;
 import io.vertx.grpc.server.auth.JWTAuthInterceptor;
-import io.vertx.grpc.server.auth.impl.JWTAuthInterceptorImpl;
 
 public class JWTGrpcServerExamples {
 
@@ -20,6 +19,12 @@ public class JWTGrpcServerExamples {
     ServerInterceptor wrappedAuthInterceptor = JWTAuthInterceptor.create(authProvider);
     ServerServiceDefinition authedService = ServerInterceptors.intercept(service, wrappedAuthInterceptor);
     GrpcServiceBridge serverStub = GrpcServiceBridge.bridge(authedService);
+    serverStub.bind(server);
+  }
+  
+  public void setupJWTServerShort(BindableService service, JWTAuth authProvider, Vertx vertx) {
+    GrpcServer server = GrpcServer.server(vertx);
+    GrpcServiceBridge serverStub = JWTAuthInterceptor.create(authProvider, service);
     serverStub.bind(server);
   }
 
