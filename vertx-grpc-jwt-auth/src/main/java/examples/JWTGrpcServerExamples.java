@@ -11,12 +11,13 @@ import io.vertx.ext.auth.jwt.JWTAuth;
 import io.vertx.grpc.server.GrpcServer;
 import io.vertx.grpc.server.GrpcServiceBridge;
 import io.vertx.grpc.server.auth.JWTAuthInterceptor;
+import io.vertx.grpc.server.auth.impl.JWTAuthInterceptorImpl;
 
 public class JWTGrpcServerExamples {
 
   public void setupJWTServer(BindableService service, JWTAuth authProvider, Vertx vertx) {
     GrpcServer server = GrpcServer.server(vertx);
-    ServerInterceptor wrappedAuthInterceptor = new JWTAuthInterceptor(authProvider);
+    ServerInterceptor wrappedAuthInterceptor = JWTAuthInterceptor.create(authProvider);
     ServerServiceDefinition authedService = ServerInterceptors.intercept(service, wrappedAuthInterceptor);
     GrpcServiceBridge serverStub = GrpcServiceBridge.bridge(authedService);
     serverStub.bind(server);
@@ -27,7 +28,7 @@ public class JWTGrpcServerExamples {
       @Override
       public void sayHello(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
         try {
-          User identity = JWTAuthInterceptor.USER_CONTEXT_KEY.get();
+          User identity = JWTAuthInterceptor.userFromContext();
           responseObserver.onNext(HelloReply.newBuilder().setMessage("Hello " + request.getName() + " from " + identity.subject()).build());
           responseObserver.onCompleted();
         } catch (Exception e) {

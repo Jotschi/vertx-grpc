@@ -1,14 +1,13 @@
 package io.vertx.grpc.it;
 
-import org.junit.Before;
 import org.junit.Test;
 
-import examples.GreeterGrpc;
-import examples.HelloReply;
-import examples.HelloRequest;
 import io.grpc.ServerInterceptor;
 import io.grpc.ServerInterceptors;
 import io.grpc.ServerServiceDefinition;
+import io.grpc.examples.helloworld.GreeterGrpc;
+import io.grpc.examples.helloworld.HelloReply;
+import io.grpc.examples.helloworld.HelloRequest;
 import io.grpc.stub.StreamObserver;
 import io.vertx.core.Future;
 import io.vertx.core.json.JsonObject;
@@ -30,6 +29,7 @@ import io.vertx.grpc.server.GrpcServiceBridge;
 import io.vertx.grpc.server.ServerTestBase;
 import io.vertx.grpc.server.auth.JWTAuthInterceptor;
 import io.vertx.grpc.server.auth.JWTGrpcClient;
+import io.vertx.grpc.server.auth.impl.JWTAuthInterceptorImpl;
 
 public class JWTAuthTest extends ServerTestBase {
 
@@ -56,7 +56,7 @@ public class JWTAuthTest extends ServerTestBase {
       @Override
       public void sayHello(HelloRequest request, StreamObserver<HelloReply> responseObserver) {
         try {
-          User identity = JWTAuthInterceptor.USER_CONTEXT_KEY.get();
+          User identity = JWTAuthInterceptor.userFromContext();
           should.assertNotNull(identity);
           should.assertEquals("johannes", identity.subject());
           responseObserver.onNext(HelloReply.newBuilder().setMessage("Hello " + request.getName()).build());
@@ -68,7 +68,7 @@ public class JWTAuthTest extends ServerTestBase {
     };
 
     // Add the JWTAuthInterceptor and start the server
-    ServerInterceptor wrappedAuthInterceptor = new JWTAuthInterceptor(authProvider);
+    ServerInterceptor wrappedAuthInterceptor = JWTAuthInterceptor.create(authProvider);
     ServerServiceDefinition authedService = ServerInterceptors.intercept(service, wrappedAuthInterceptor);
     GrpcServiceBridge serverStub = GrpcServiceBridge.bridge(authedService);
     serverStub.bind(server);
