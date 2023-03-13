@@ -13,15 +13,14 @@ package io.vertx.grpc.client.impl;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
-import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClientResponse;
-
 import io.vertx.grpc.client.GrpcClientResponse;
 import io.vertx.grpc.common.CodecException;
+import io.vertx.grpc.common.GrpcException;
 import io.vertx.grpc.common.GrpcMessageDecoder;
-import io.vertx.grpc.common.impl.GrpcReadStreamBase;
 import io.vertx.grpc.common.GrpcStatus;
+import io.vertx.grpc.common.impl.GrpcReadStreamBase;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -83,7 +82,7 @@ public class GrpcClientResponseImpl<Req, Resp> extends GrpcReadStreamBase<GrpcCl
       if (status == GrpcStatus.OK) {
         return Future.succeededFuture();
       } else {
-        return Future.failedFuture("Invalid gRPC status " + status);
+        return Future.failedFuture(new GrpcException("Invalid gRPC status " + status, status, httpResponse));
       }
     });
   }
