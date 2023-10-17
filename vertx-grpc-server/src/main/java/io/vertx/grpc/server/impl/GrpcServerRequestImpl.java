@@ -10,7 +10,6 @@
  */
 package io.vertx.grpc.server.impl;
 
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpConnection;
@@ -20,8 +19,9 @@ import io.vertx.grpc.common.CodecException;
 import io.vertx.grpc.common.GrpcMessageDecoder;
 import io.vertx.grpc.common.GrpcMessageEncoder;
 import io.vertx.grpc.common.ServiceName;
-import io.vertx.grpc.common.impl.GrpcReadStreamBase;
 import io.vertx.grpc.common.impl.GrpcMethodCall;
+import io.vertx.grpc.common.impl.GrpcReadStreamBase;
+import io.vertx.grpc.server.GrpcServerContext;
 import io.vertx.grpc.server.GrpcServerRequest;
 import io.vertx.grpc.server.GrpcServerResponse;
 
@@ -32,6 +32,7 @@ public class GrpcServerRequestImpl<Req, Resp> extends GrpcReadStreamBase<GrpcSer
 
   final HttpServerRequest httpRequest;
   final GrpcServerResponse<Req, Resp> response;
+  final GrpcServerContext context;
   private GrpcMethodCall methodCall;
 
   public GrpcServerRequestImpl(HttpServerRequest httpRequest, GrpcMessageDecoder<Req> messageDecoder, GrpcMessageEncoder<Resp> messageEncoder, GrpcMethodCall methodCall) {
@@ -39,6 +40,7 @@ public class GrpcServerRequestImpl<Req, Resp> extends GrpcReadStreamBase<GrpcSer
     this.httpRequest = httpRequest;
     this.response = new GrpcServerResponseImpl<>(this, httpRequest.response(), messageEncoder);
     this.methodCall = methodCall;
+    this.context = new GrpcServerContextImpl(this, httpRequest.response());
   }
 
   public String fullMethodName() {
@@ -90,5 +92,15 @@ public class GrpcServerRequestImpl<Req, Resp> extends GrpcReadStreamBase<GrpcSer
   @Override
   public HttpConnection connection() {
     return httpRequest.connection();
+  }
+
+  @Override
+  public HttpServerRequest httpRequest() {
+    return httpRequest;
+  }
+
+  @Override
+  public GrpcServerContext context() {
+    return context;
   }
 }

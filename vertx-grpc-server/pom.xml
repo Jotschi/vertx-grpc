@@ -40,6 +40,14 @@
       <artifactId>vertx-grpc-common</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.vertx</groupId>
+      <!-- Replace with vertx-auth-common once moved
+      <artifactId>vertx-auth-common</artifactId>
+      -->
+      <artifactId>vertx-web-auth-common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.grpc</groupId>
       <artifactId>grpc-stub</artifactId>
       <version>${grpc.version}</version>
