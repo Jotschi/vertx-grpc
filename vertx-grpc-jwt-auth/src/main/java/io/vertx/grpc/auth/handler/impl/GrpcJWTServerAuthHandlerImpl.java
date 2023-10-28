@@ -3,10 +3,9 @@ package io.vertx.grpc.auth.handler.impl;
 import io.vertx.core.Future;
 import io.vertx.ext.auth.User;
 import io.vertx.ext.auth.authentication.TokenCredentials;
-import io.vertx.ext.auth.common.UserContextInternal;
 import io.vertx.ext.auth.common.handler.impl.HTTPAuthorizationHandler;
 import io.vertx.ext.auth.jwt.JWTAuth;
-import io.vertx.ext.web.common.HttpException;
+import io.vertx.ext.web.handler.HttpException;
 import io.vertx.grpc.auth.handler.GrpcJWTServerAuthHandler;
 import io.vertx.grpc.common.GrpcException;
 import io.vertx.grpc.common.GrpcStatus;
@@ -20,14 +19,6 @@ public class GrpcJWTServerAuthHandlerImpl extends HTTPAuthorizationHandler<GrpcS
 
   public GrpcJWTServerAuthHandlerImpl(JWTAuth authProvider, String realm) {
     super(authProvider, Type.BEARER, realm);
-  }
-
-  @Override
-  public void postAuthentication(GrpcServerContext ctx, User authenticated) {
-    System.out.println("POST auth");
-    System.out.println(authenticated.subject());
-    ((UserContextInternal) ctx.user())
-      .setUser(authenticated);
   }
 
   @Override

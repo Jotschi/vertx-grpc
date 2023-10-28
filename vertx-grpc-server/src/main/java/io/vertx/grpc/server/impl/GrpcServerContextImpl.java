@@ -2,6 +2,7 @@ package io.vertx.grpc.server.impl;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.auth.common.Session;
 import io.vertx.ext.auth.common.UserContext;
 import io.vertx.grpc.server.GrpcServerContext;
 import io.vertx.grpc.server.GrpcServerRequest;
@@ -15,7 +16,7 @@ public class GrpcServerContextImpl<Req, Resp> implements GrpcServerContext {
   public GrpcServerContextImpl(GrpcServerRequest<Req, Resp> request, HttpServerResponse response) {
     this.request = request;
     this.response = response;
-    this.userContext = new UserContextImpl();
+    this.userContext = new UserContextImpl(this);
   }
 
   @Override
@@ -33,4 +34,10 @@ public class GrpcServerContextImpl<Req, Resp> implements GrpcServerContext {
     return userContext;
   }
 
+  @Override
+  public Session session() {
+    // TODO use context? throw exception?
+    return null;
+  }
+  
 }
